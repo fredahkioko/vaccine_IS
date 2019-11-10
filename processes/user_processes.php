@@ -2,7 +2,7 @@
 //start session service
 session_start();
 //Importing database connection
-require_once "../database/dbConn.php";
+require_once "../database/db_conn.php";
 //signup process
 if (isset($_POST["signup"])) {
     //variable declaration
@@ -13,7 +13,7 @@ if (isset($_POST["signup"])) {
     $ConfPass = mysqli_real_escape_string($dbConn, $_POST["ConfPass"]);
     $phonenumber = mysqli_real_escape_string($dbConn, $_POST["phonenumber"]);
     $bloodgroup = mysqli_real_escape_string($dbConn, $_POST["bloodgroup"]);
-    $rolename = mysqli_real_escape_string($dbConn, $_POST["rolename"]);
+    $roleid = mysqli_real_escape_string($dbConn, $_POST["role_id"]);
     
     //verifying if the password and confirm password are the same
     if ($password != $ConfPass) {
@@ -23,30 +23,41 @@ if (isset($_POST["signup"])) {
     //encrypting password
     $hash_password = password_hash($ConfPass, PASSWORD_DEFAULT);
     //inserting data innto users table
-    $user_insert = "INSERT INTO tbl_user(fullname, username, email,password,phonenumber, rolename)VALUES('$fullname', '$username', '$email',' $password','$hash_password','$phonenumber', '$rolename')";
+    $user_insert = "INSERT INTO tbl_users(fullname, username, email,password,phonenumber, role_id)VALUES('$fullname', '$username', '$email','$hash_password','$phonenumber', '$roleid')";
+    // die(print_r($user_insert));
+
       //executing the sql query
     if($dbConn->query($user_insert) === TRUE){
         $last_id = $dbConn->insert_id;
-        if($userType == "Supernurse"){
+        if($roleid == 5){
             header("Location: ../admin.php");
         }
 
-       elseif ($rolename=='mother') {
-          $mo_insert = "INSERT INTO tbl_motherbiodata(mother_id,bloodgroup,role_id) VALUES($bloodgroup','$role_id','$last_id')";
+       elseif ($roleid == 2) {
+          $mo_insert = "INSERT INTO tbl_motherbiodata (bloodgroup,role_id,user_id) VALUES('$bloodgroup','$roleid','$last_id')";
         }
-        elseif ($rolename=='father') {
-          $mo_insert = "INSERT INTO tbl_fatherbiodata(father_id,bloodgroup,role_id) VALUES($bloodgroup','$role_id','$last_id')";
+        elseif ($roleid == 1) {
+          $mo_insert = "INSERT INTO tbl_fatherbiodata (bloodgroup,role_id,user_id) VALUES('$bloodgroup','$roleid','$last_id')";
         
         }
-        elseif ($rolename=='guardian') {
-          $mo_insert = "INSERT INTO tbl_guardianbiodata(guardian_id,bloodgroup,role_id) VALUES($bloodgroup','$role_id','$last_id')";
+        elseif ($roleid == 3) {
+          $mo_insert = "INSERT INTO tbl_guardianbiodata (bloodgroup,role_id,user_id) VALUES('$bloodgroup','$roleid','$last_id')";
         }
-        $dbConn->query($mo_insert);
+        // die(print_r($mo_insert));
+        if($dbConn->query($mo_insert) == TRUE){
+          $_SESSION['message'] = "Registration Successful";
           header("Location: ../login.php?register=success");
               exit();
-              }else{
-                  die("Registration Failed:  <br />" .$dbConn->error);
-              }     
+        }else{
+          // die("Registration Failed:  <br />" .$dbConn->error);
+
+          $_SESSION['message'] = "Registration Failed";
+          header("Location: ../register.php");
+        }
+    }else{
+        $_SESSION['message'] = "Registration Failed";
+        header("Location: ../register.php");
+    }     
 }
 //signin process
 if(isset($_POST["signin"])){
@@ -140,6 +151,7 @@ if (isset($_POST["save"])) {
         $last_id = $dbConn->insert_id;
         if($userType == "Supernurse"){
             header("Location: ../admin.php");
+        }
        elseif ($rolename=='mother') {
           $mo_insert = "INSERT INTO tbl_motherbiodata(mother_id,bloodgroup,role_id) VALUES($bloodgroup','$role_id','$last_id')";
         }
@@ -164,7 +176,7 @@ if(isset($_POST['update'])){
     $username = $_POST['username'];
     $email = $_POST['email'];
     $phonenumber = $_POST['phonenumber'];
-    $bloodgroup=$_POST['bloodgroup']
+    $bloodgroup=$_POST['bloodgroup'];
     $rolename = $_POST['rolename'];
 
 //updating the table
@@ -188,5 +200,6 @@ if(isset($_POST['savechanges'])){
         } else {
             die("User Deletion failed: <br /> " .$dbConn->error);
         }
+      }
 
 ?>
