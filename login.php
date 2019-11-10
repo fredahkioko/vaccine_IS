@@ -1,4 +1,4 @@
-
+<?php session_start(); ?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -17,9 +17,24 @@
 
     <!-- Custom styles for this template -->
     <link href="assets/css/signin.css" rel="stylesheet">
+    <script src="./assets/jquery/jquery-3.4.1.min.js"></script>
+
+    <script src="./assets/js/bootstrap.min.js"></script>
   </head>
 
   <body class="text-center">
+  <?php if(isset($_SESSION['message'])){
+    echo
+    '
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+      '.$_SESSION["message"].'
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>  
+    ';
+    } unset($_SESSION['message'])?>
+    
     <form class="form-signin">
       <img class="mb-4" src="assets/images/login.png" alt="" width="72" height="72">
       <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
