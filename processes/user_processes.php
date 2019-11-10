@@ -43,13 +43,11 @@ if (isset($_POST["signup"])) {
         elseif ($roleid == 3) {
           $mo_insert = "INSERT INTO tbl_guardianbiodata (bloodgroup,role_id,user_id) VALUES('$bloodgroup','$roleid','$last_id')";
         }
-        // die(print_r($mo_insert));
         if($dbConn->query($mo_insert) == TRUE){
           $_SESSION['message'] = "Registration Successful";
           header("Location: ../login.php?register=success");
               exit();
         }else{
-          // die("Registration Failed:  <br />" .$dbConn->error);
 
           $_SESSION['message'] = "Registration Failed";
           header("Location: ../register.php");
